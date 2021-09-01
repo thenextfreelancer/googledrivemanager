@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+        <title>Student Page</title>
+        <link rel="stylesheet" href="/css/main.css" />
+        <script type="text/javascript">
+	        function populateVideoList() {
+	        	var videoListDiv = document.querySelector('#video-list');
+	        	var videoError = document.querySelector('#video-error');
+	        	var xhr = new XMLHttpRequest();
+	            xhr.open("GET", "/gdrive/getAllFiles");
+	            xhr.onload = function() {
+	                var response = JSON.parse(xhr.responseText);
+	                if(xhr.status == 200) {
+	                	
+	                	if(response.length > 0)
+	                	{
+	                		var videoHtml = "";
+	                		for(var ii = 0; ii < response.length; ii++)
+	            			{
+	                			var videoInfo = response[ii];
+	                			if(videoInfo.fileType.indexOf("video") !== -1)
+	                			videoHtml += "<video id=\"video"+ii+"\" width=\"320\" height=\"240\" controls><source src=\""+videoInfo.fileDownloadUri+"\" type=\""+videoInfo.fileType+"\"></video><br>"
+	            			}
+	                	}
+	                	videoError.style.display = "none";
+	                	videoListDiv.innerHTML = videoHtml;
+	                	videoListDiv.style.display = "block";
+	                } else {
+	                	videoListDiv.style.display = "none";
+	                    videoError.innerHTML = (response && response.message) || "Some Error Occurred";
+	                }
+	            }
+	
+	            xhr.send();
+	        }
+        </script>
+    </head>
+    <body>
+        <noscript>
+            <h2>Sorry! Your browser doesn't support Javascript</h2>
+        </noscript>
+        <button onclick="populateVideoList()" class="primary submit-btn" style="margin-top: 500px;">Load Videos</button> 
+        <div id="video-list">        
+        </div>
+        <div id="video-error">        
+        </div>
+    </body>
+</html>
